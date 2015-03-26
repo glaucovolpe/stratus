@@ -1,0 +1,80 @@
+#include<iostream>
+//#include<stdlib.h>
+#include<cstdlib>
+#include<gps.h>
+#include<string>
+#include<sstream>
+/*
+ * 'open_port()' - Open serial port 1.
+ *
+ * Returns the file descriptor on success or -1 on error.
+*/
+
+using namespace std;
+
+
+GPS::GPS() {
+
+}
+
+
+unsigned int GPS::checkSum(char * data,int sizeOfData){
+    	int checksum = 0;
+    	for(int k=1;k<sizeOfData;k++)
+    	{
+              	checksum ^= data[k];
+		cout<< data[k];
+    	}
+ 
+	cout<<endl;
+//delete[] data;
+    	return(checksum);
+}
+
+int GPS::dataEdit(char * data, int sizeOfData){
+//int j=0;
+int c=0;
+int commas[20];
+//unsigned int check;
+//stringstream ss;
+double number;
+string str;
+
+	for(int i=0; i < sizeOfData; i++){
+		if(data[i]=='$'){
+			c=0;
+			if(data[i+4]=='G'){
+				for(;i<sizeOfData;i++){
+					if((data[i]<20) | (i>349)) break;
+					if(data[i]==','){
+					commas[c]=i;
+					c++;
+					}
+					if(data[i]=='*'){
+					//check = checkSum((data+j),(i-j));
+					//cout<<check<<"\n";
+					str.append(data+1,commas[0], commas[1]-commas[0]-1);
+					number = atof(str.c_str());
+					setLat(number);
+					cout<<getLat()<<endl;
+					str="";
+					str.append(data+1,commas[1], commas[2]-commas[1]-1);
+					cout << str;
+					number = atof(str.c_str());
+					setLon(number);
+					//cout<<"\n";
+					}
+				}
+			}
+		//*/
+		//cout<<endl;
+		}
+	}
+delete[] data;
+return 0;
+}
+
+
+GPS::~GPS(){
+	//GPS's destructor
+}

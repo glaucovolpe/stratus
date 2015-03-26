@@ -41,18 +41,18 @@ char * SERIAL::Read(){
     	fcntl(file, F_SETFL, 0);
 
 	tcgetattr(file, &options);
-        //cfsetispeed(&options, B4800);
-        //cfsetospeed(&options, B4800);
+        cfsetispeed(&options, B4800);
+        cfsetospeed(&options, B4800);
 	//options.c_lflag |= (ICANON | ECHO | ECHOE);
 	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	options.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD | CLOCAL;
-        options.c_iflag = IGNPAR | ICRNL;
+	//options.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
+        //options.c_iflag = IGNPAR | ICRNL;
         //options.c_oflag = 0;
         //options.c_cc[VMIN]=1;
         //options.c_cc[VTIME]=0;
-        tcflush(file, TCIFLUSH);
+        //tcflush(file, TCIFLUSH);
 	tcsetattr(file, TCSANOW, &options);
-	usleep(1000000);
+	usleep(1300000);
 	//data = read(file, buffer, sizeof(buffer));
 	//while (STOP==0) {
         //  printf(".\n");usleep(100000);
@@ -94,7 +94,6 @@ int SERIAL::Write(){
 
 
 SERIAL::~SERIAL() {
-//delete[] data;
     // MPU6050's destructor
 }
 
