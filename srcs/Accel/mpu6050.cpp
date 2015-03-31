@@ -42,9 +42,7 @@ MPU6050::MPU6050(int bus, int address) {
     I2CBus = bus;
     I2CAddress = address;
 
-cout << "congig 0 de 2" << endl;
     WriteByte(PWR_MGMT_1,0x00);
-cout << "congig 1 de 2" << endl;
     WriteByte(ACCEL_CONFIG,0x00);
     cout << "congig 2 de 2" << endl;
 

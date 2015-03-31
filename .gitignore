@@ -29,4 +29,6 @@
 
 #Etc
 Makefile
-*.pro
+#*.pro
+*.save
+

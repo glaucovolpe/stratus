@@ -12,13 +12,12 @@ private:
     int setUSER_CTRL();
     int  WriteByte(char address, char value);
 
-//    int accX;
-//    int accY;
-//    int accZ;
-//    int gyroX;
-//    int gyroY;
-//    int gyroZ;
-//    float temperature;
+    int accX;
+    int accY;
+    int accZ;
+    int gyroX;
+    int gyroY;
+    int gyroZ;
 //    double theta;
 //    double omega;
 //    int  HEXtoINT(int OUT_H, int OUT_L);
@@ -27,13 +26,12 @@ public:
     MPU6050(int bus, int address);
     char* ReadAll();
 
-//    int getAccX() { return accX; }
-//    int getAccY() { return accY; }
-//    int getAccZ() { return accZ; }
-//    float getTemperature();
-//    int getGyroX() { return gyroX; }
-//    int getGyroY() { return gyroY; }
-//    int getGyroZ() { return gyroZ; }
+    int getAccX() { return accX; }
+    int getAccY() { return accY; }
+    int getAccZ() { return accZ; }
+    int getGyroX() { return gyroX; }
+    int getGyroY() { return gyroY; }
+    int getGyroZ() { return gyroZ; }
     virtual ~MPU6050();
     
 };

@@ -1,14 +1,19 @@
+/*******************************************************************************\
+|    This code read data from a gps(GTPA010) receiver and stores in memmory for	|
+| telemetry use.                                                              	|
+|                                                                             	|
+|  Created on 27 March 2015                                                   	|
+|  By Glauco Volpe <glauco@aluno.unb.br>                                     	|
+\*******************************************************************************/
+
+
+
+
 #include<iostream>
-//#include<stdlib.h>
 #include<cstdlib>
 #include<gps.h>
 #include<string>
 #include<sstream>
-/*
- * 'open_port()' - Open serial port 1.
- *
- * Returns the file descriptor on success or -1 on error.
-*/
 
 using namespace std;
 
@@ -43,15 +48,14 @@ string str;
 	for(int i=0; i < sizeOfData; i++){
 		if(data[i]=='$'){
 			c=0;
-			if(data[i+3]=='R'){
 /*
 *	$GPRMC,225446,A,4916.45,N,12311.12,W,000.5,054.7,191194,020.3,E*68
 *
 *	1 = Time of fix 22:54:46 UTC
 *     	2 = Navigation receiver warning A = OK, V = warning
-*     	3 = Latitude 49 deg. 16.45 min 
+*     	3 = Latitude 49 deg. 16.45 min
 *	4 = Lattitude dir  North
-*     	5 = Longitude 123 deg. 11.12 min 
+*     	5 = Longitude 123 deg. 11.12 min
 *	6 = Longitude dir West
 *    	7 = Speed over ground, Knots
 *     	8 = Course Made Good, True
@@ -59,8 +63,9 @@ string str;
 *    	10 = Magnetic variation 20.3 deg East
 *     	11 = mandatory checksum
 */
+			if(data[i+3]=='R'){
 			for(;i<sizeOfData;i++){
-                                        if((data[i]<20) | (i>349)) 
+                                        if((data[i]<20) | (i>349))
 					break;
                                         if(data[i]==','){
                                         commas[c]=i;
@@ -73,21 +78,21 @@ string str;
                                         str.append(data+1,commas[0], commas[1]-commas[0]-1);
                                         number = atof(str.c_str());
                                         setTim(number);
-                                        cout<<"Tempo: "<<number<<endl;
+                                        cout<<"Time: "<<number<<endl;
                                         str="";
 //Latitude
-                                        str.append(data+1,commas[1], commas[2]-commas[1]-1);
+                                        str.append(data+1,commas[2], commas[3]-commas[2]-1);
                                         number = atof(str.c_str());
-                                        if(data[commas[2]+1]=='N')
+                                        if(data[commas[3]+1]=='N')
                                         number *= -1;
                                         setLat(number);
                                         cout<<"Latitude: "<<getLat()<<endl;
                                         str="";
 
 //Longitude
-                                        str.append(data+1,commas[3], commas[4]-commas[3]-1);
+                                        str.append(data+1,commas[4], commas[5]-commas[4]-1);
                                         number = atof(str.c_str());
-                                        if(data[commas[4]+1]=='E')
+                                        if(data[commas[5]+1]=='E')
                                         number *= -1;
                                         setLon(number);
                                         cout<<"Longitude: "<<getLon()<<endl;
@@ -110,10 +115,9 @@ string str;
 
                                         }
                                 }
-
+			break;
 			}
 
-			if(data[i+4]=='G'){
 /*
 *	$GPGGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh
 *	1  = UTC of Position
@@ -132,6 +136,7 @@ string str;
 *	14 = Diff. reference station ID#
 *	15 = Checksum
 */
+                        if(data[i+4]=='G'){
 				for(;i<sizeOfData;i++){
 					if((data[i]<20) | (i>349))
 						break;
@@ -141,7 +146,7 @@ string str;
 					}
 					if(data[i]=='*'){
 					//check = checkSum((data+j),(i-j));
-/*					//cout<<check<<"\n";
+					//cout<<check<<"\n";
 //Tempo
 					str.append(data+1,commas[0], commas[1]-commas[0]-1);
                                         number = atof(str.c_str());
@@ -164,18 +169,17 @@ string str;
 					setLon(number);
 					cout<<"Longitude: "<<getLon()<<endl;
 					str="";
-*/
+
 //Altitude
-					str.append(data+1,commas[3], commas[2]-commas[1]-1);
-                                        cout << str;
-                                        number = atof(str.c_str());
-                                        setAlt(number);
+//					str.append(data+1,commas[3], commas[2]-commas[1]-1);
+//                                        cout << str;
+//                                        number = atof(str.c_str());
+//                                        setAlt(number);
 
 					}
 				}
+			break;
 			}
-		//
-		//cout<<endl;
 		}
 	}
 delete[] data;
