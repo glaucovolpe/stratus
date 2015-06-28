@@ -11,90 +11,75 @@
 
 
 #define BAUDRATE B4800
-#define MAX_BUFF 350
+
 
 using namespace std;
 
 SERIAL::SERIAL(int baud, int bus) {
-	baud = bus;
-	baud++;
-
+	this->file=-1;
+	this->serialBus = bus;
+	this->serialBaud = baud;
+	this->open();
 }
 
-char * SERIAL::Read(){
-	int serialport = 4;
-	char namebuf[14];
-	char * data = new char[MAX_BUFF] ;
+int SERIAL::open(){
+        char namebuf[14];
 	struct termios options;
 	//int wait_flag, STOP;
 
-	snprintf(namebuf, sizeof(namebuf), "/dev/ttyO%d", serialport);
-	int file;
+	snprintf(namebuf, sizeof(namebuf), "/dev/ttyO%d", this->serialBus);
 
-	if ((file = open(namebuf, O_RDWR | O_NOCTTY | O_NDELAY)) < 0){
-		cout << "Failed to open serial port on " << endl;
-		perror("open_port: Unable to open /dev/ttyf1 - ");
+	if ((this->file = ::open(namebuf, O_RDWR | O_NOCTTY | O_NDELAY)) < 0){
+		cout << "Failed to open serial port on "<< this->serialBus << endl;
+//		perror("open_port: Unable to open /dev/ttyf1%d",this->serialbus);
 		return 0;
 	}
 
-
     	fcntl(file, F_SETFL, 0);
 
-	tcgetattr(file, &options);
-        //cfsetispeed(&options, B4800);
-        //cfsetospeed(&options, B4800);
-	//options.c_lflag |= (ICANON | ECHO | ECHOE);
-	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	options.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD | CLOCAL;
-        options.c_iflag = IGNPAR | ICRNL;
-        //options.c_oflag = 0;
-        //options.c_cc[VMIN]=1;
-        //options.c_cc[VTIME]=0;
-        tcflush(file, TCIFLUSH);
-	tcsetattr(file, TCSANOW, &options);
-	usleep(1000000);
-	//data = read(file, buffer, sizeof(buffer));
-	//while (STOP==0) {
-        //  printf(".\n");usleep(100000);
-          /* after receiving SIGIO, wait_flag = FALSE, input is available
-             and can be read */
-        //  if (wait_flag==0) { 
-        //    bytesRead = read(file,Buffer,255);
-        //    bufff[bytesRead]=0;
-        //    printf(":%s:%d\n", buffer, bytesRead);
-        //    if (bytesRead==1) STOP=1; /* stop loop if only a CR was input */
-        //    wait_flag = 1;      /* wait for new input */
-        //  }
-	//}
-
-   int bytesRead = read(file, this->Buffer, MAX_BUFF);
-
-	cout<<"number of bytes readed: "<<bytesRead<<endl;
-//	for(int i=0;i<bytesRead;i++)
-//	{
-//	cout<<Buffer[i];
-//	}
-	cout<<"\n";
-	//tcflush(file, TCIFLUSH);
-//    close(file);
-
-     memcpy(data, Buffer,bytesRead);
-
-    return data;
-}
-
-
-
-int SERIAL::Write(){
+	tcgetattr(this->file, &options);
+//        cfsetospeed(&options, B4800);
+	options.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD | CLOCAL;
+        options.c_lflag = ICANON | IGNCR;
+        tcflush(this->file, TCIFLUSH);
+	tcsetattr(this->file, TCSANOW, &options);
+        read(this->file, this->buffer, MAX_BUFFER);
+//	usleep(1000000);
 
     return 0;
 }
 
+char* SERIAL::Read(){
 
 
+	int bytesRead = read(this->file, this->buffer, MAX_BUFFER);
+	if (bytesRead<2)
+	bytesRead = read(this->file, this->buffer, MAX_BUFFER);
+
+//   cout<<"->"<<bytesRead<<"<-"<<endl;
+
+//   cout<<"number of bytes readed: "<<bytesRead<<endl;
+
+//   string str(this->buffer);
+//   str.append(char(bytesRead));
+//   return str;
+   return this->buffer;
+}
+
+
+
+int SERIAL::Write(unsigned char msg){
+//    write(this->file,)
+    if(msg) cout <<"só um teste"<< endl ;
+    return 0;
+}
+
+void SERIAL::close(){
+	::close(this->file);
+	this->file = -1;
+}
 
 SERIAL::~SERIAL() {
-//delete[] data;
-    // MPU6050's destructor
+    if(file!=-1) this->close();
 }
 

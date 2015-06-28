@@ -8,9 +8,9 @@ class GPS
 private:
 float LATITUDE, LONGITUDE, SPEED, ALTITUDE, DIRECTION, TIME;
 	void setAlt(float alt){ALTITUDE = alt;}
-        void setLat(float lat){LATITUDE = lat;}
-        void setLon(float lon){LONGITUDE = lon;}
-        void setSpd(float spd){SPEED = spd*1.852;}
+	void setLat(float lat){LATITUDE = int(lat/100)+(lat-int(lat/100)*100)/60;}
+	void setLon(float lon){LONGITUDE = int(lon/100)+(lon-int(lon/100)*100)/60;}
+	void setSpd(float spd){SPEED = spd*1.852;}
 	void setTim(float tim){TIME = tim;}
 	void setDir(float dir){DIRECTION = dir;}
 public:

@@ -2,19 +2,22 @@
 
 #define SERIAL_H
 
-#define SERIAL_BUFFER 300
- 
+#define MAX_BUFFER 200
+
 class SERIAL
 {
 
 private:
-    int I2CBus, I2CAddress;
-    unsigned char Buffer[SERIAL_BUFFER];
+    int serialBus, serialBaud;
+    char buffer[MAX_BUFFER];
+    int file;
 
 public:
     SERIAL(int bus, int address);
+    int open();
     char* Read();
-    int Write();
+    int Write(unsigned char msg);
+    void close();
     virtual ~SERIAL();
     
 };

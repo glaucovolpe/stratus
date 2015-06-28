@@ -8,9 +8,9 @@ TARGET = gps
 
 TEMPLATE = app
 
-DESTDIR = ../../build/GPS
-MOC_DIR = ../../build/GPS
-OBJECTS_DIR = ../../build/GPS
+DESTDIR = ../build
+MOC_DIR = ../build
+OBJECTS_DIR = ../build
 
 SOURCES += main.cpp \
     	   gps.cpp  \	

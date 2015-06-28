@@ -10,93 +10,87 @@
 #include <string.h>
 #include <i2c.h>
 
-
+#define SIZE_PATH 0x10
 #define MAX_BUS 0x75
 
 
 using namespace std;
 
-I2C::I2C(int bus, int address) {
-    I2CBus = bus;
-    I2CAddress = address;
-
-//    WriteByte(PWR_MGMT_1,0x00);
-//    WriteByte(ACCEL_CONFIG,0x00);
-//    cout << "congig 2 de 2" << endl;
+I2C::I2C(unsigned int bus,unsigned char address) {
+        this->file=-1;
+	this->i2cBus = bus;
+	this->i2cAddress = address;
+	this->open();
 }
 
-char * I2C::ReadAll(){
+int I2C::open(){
 
-    char namebuf[MAX_BUS];
-    char * data = new char[14];
+    char namebuf[SIZE_PATH];
+    snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", this->i2cBus);
 
-    snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
-    int file;
-
-    if ((file = open(namebuf, O_RDWR)) < 0){
-            cout << "Failed to open MPU6050 Sensor on " << namebuf << " I2C Bus" << endl;
+    if ((this->file = ::open(namebuf, O_RDWR)) < 0){
+            cout << "Failed to open I2C device!" << namebuf << " Couldn't fid /dev/i2c-"<< this->i2cBus << endl;
             return 0;
     }
-    if (ioctl(file, I2C_SLAVE, I2CAddress) < 0){
-            cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
+    if (ioctl(this->file, I2C_SLAVE, this->i2cAddress) < 0){
+            cout << "I2C_SLAVE "<< this->i2cAddress << this->i2cAddress << " doesn't exists" << endl;
             return 0;
     }
+return 1;
+}
 
-    char buf[1] = { 0x00 };
-    if(write(file, buf, 1) !=1){
-        cout << "Failed to Reset Address in ReadAll " << endl;
+unsigned char * I2C::readBytes(unsigned char regAddress,unsigned int numBytes){
+
+    unsigned char buffer[numBytes];
+    buffer[0]=  regAddress;
+    if(::write(this->file, buffer , 1) !=1){
+        cout << "Failed to Reset Address" << endl;
     }
 
-    int numberBytes = MPU6050_I2C_BUFFER;
-    int bytesRead = read(file, this->Buffer, numberBytes);
+    int bytesRead = read(this->file, buffer, numBytes);
     if (bytesRead == -1){
-        cout << "Failure to read Byte Stream in readFullSensorState()" << endl;
+        cout << "Failure to read Byte Stream" << endl;
     }
-    close(file);
 
-     memcpy(data, Buffer,14);
-
-        if ((this->Buffer[0]!=0x81)){
-            cout << "MAJOR FAILURE: DATA WITH MPU6050 HAS LOST SYNC!" << endl;
-        }
-
-    return data;
+    return buffer;
 }
 
 
 
-
-
-int I2C::WriteByte(char address, char value){
-
-    char namebuf[MAX_BUS];
-    snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
-    int file;
-    if ((file = open(namebuf, O_RDWR)) < 0){
-            cout << "Failed to open MPU6050 Sensor on " << namebuf << " I2C Bus" << endl;
-            return(1);
+unsigned char I2C::readByte(unsigned char regAddress){
+    unsigned char buffer[1] = { regAddress };
+    if(::write(this->file, buffer , 1) !=1){
+        cout << "Failed to Reset Address" << endl;
     }
 
-    if (ioctl(file, I2C_SLAVE, I2CAddress) < 0){
-            cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
-            return(2);
+    int bytesRead = read(this->file, buffer, 1);
+    if (bytesRead == -1){
+        cout << "Failure to read Byte Stream" << endl;
     }
 
-    char buffer[2];
-        buffer[0] = address;
+//   memcpy(data, this->buffer,1);
+
+    return buffer[0];
+}
+
+
+int I2C::writeByte(unsigned char regAddress,unsigned char value){
+    unsigned char buffer[2];
+        buffer[0] = regAddress;
         buffer[1] = value;
-    if ( write(file, buffer, 2) != 2) {
+    if (::write(this->file, buffer, 2) != 2) {
         cout << "Failure to write values to I2C Device address." << endl;
         return(3);
     }
 
-    close(file);
     return 0;
 }
 
+void I2C::close(){
+	::close(this->file);
+	this->file = -1;
+}
 
-
-
-I2C::~I2C() {
-    // MPU6050's destructor
+I2C::~I2C(){
+	if(file!=-1) this->close();
 }

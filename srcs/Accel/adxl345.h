@@ -1,9 +1,9 @@
-#ifndef MPU6050_H
+#ifndef ADXL345_H
 
-#define MPU6050_H
+#define ADXL345_H
 #define MPU6050_I2C_BUFFER 0x80
 
-class MPU6050
+class ADXL345
 {
 
 private:
@@ -18,12 +18,9 @@ private:
     int gyroX;
     int gyroY;
     int gyroZ;
-//    double theta;
-//    double omega;
-//    int  HEXtoINT(int OUT_H, int OUT_L);
 
 public:
-    MPU6050(int bus, int address);
+    ADXL345(int bus, int address);
     char* ReadAll();
 
     int getAccX() { return accX; }
@@ -32,8 +29,9 @@ public:
     int getGyroX() { return gyroX; }
     int getGyroY() { return gyroY; }
     int getGyroZ() { return gyroZ; }
-    virtual ~MPU6050();
-    
+
+    virtual ~ADXL345();
+
 };
 
-#endif // MPU6050_H
+#endif // ADXL345_H

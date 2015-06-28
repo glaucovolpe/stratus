@@ -21,11 +21,11 @@ ADXL345::ADXL345(int bus, int address) {
     I2CBus = bus;
     I2CAddress = address;
 
-    WriteByte(PWR_MGMT_1,0x00);
-    WriteByte(ACCEL_CONFIG,0x00);
+    //WriteByte(PWR_MGMT_1,0x00);
+    //WriteByte(ACCEL_CONFIG,0x00);
     cout << "congig 2 de 2" << endl;
 
-    ReadAll();
+    //ReadAll();
 
 }
    //    this->accX = HEXtoINT(ACCEL_XOUT_H, ACCEL_XOUT_L);
@@ -41,7 +41,7 @@ ADXL345::ADXL345(int bus, int address) {
 //}
 
 
-ADXL345~ADXL345() {
+ADXL345::~ADXL345() {
     // MPU6050's destructor
 }
 
